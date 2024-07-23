@@ -1,119 +1,157 @@
 from datetime import datetime
+from sqlalchemy.orm import relationship
+from database import Base
+from sqlalchemy import Column, String, Integer, TIMESTAMP, Boolean, ForeignKey
 
-from sqlalchemy import Table,Column,String, Integer,Float,TIMESTAMP,Boolean, MetaData,ForeignKey
+
+class Users(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True)
+    hashed_password = Column(String(150))
+    phone_number = Column(String(30))
+    name = Column(String(100))
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    is_active = Column(Boolean, default=True)
+    user_photo = Column(String, default="no photo yet !")
+    role_id = Column(Integer, ForeignKey("roles.id"))
+
+    role = relationship("Roles", back_populates="role_owner")
+    enrollment = relationship("Enrollments", back_populates="owner")
+    student_user = relationship("StudentQuizAttempts", back_populates="student_quiz_attempt_user")
+    course_rating = relationship("CourseRatings", back_populates="course_rating_user")
+    lesson_rating = relationship("LessonRatings", back_populates="lesson_rating_user")
+
+
+class Roles(Base):
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    role_name = Column(String(20))
+
+    role_owner = relationship("Users", back_populates="role")
 
 
 
-metadata = MetaData()
+class Courses(Base):
+    __tablename__ = "courses"
 
-users = Table(
-    'users',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('email', String(100)),
-    Column('password', String(150)),
-    Column('name', String(100)),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow),
-    Column('is_active', Boolean, default=True),
-    Column('role_id',Integer,ForeignKey('role.id')),
-    Column('user_photo',String, default='no photo yet !')
-)
+    id = Column(Integer, primary_key=True, index=True)
+    course_name = Column(String)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    duration = Column(Integer)
+    is_active = Column(Boolean, default=True)
 
-role = Table(
-    'role',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('role_name', String)
-)
+    enrollment = relationship("Enrollments", back_populates="course")
+    lesson = relationship("Lessons", back_populates="course")
+    course_rating = relationship("CourseRatings", back_populates="course_rating_course")
 
-course = Table(
-    'course',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('course_name', String),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow),
-    Column('duration', Integer),
-    Column('is_active', Boolean, default=True),
-)
 
-enrollment = Table(
-    'enrollment',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('user_id', Integer, ForeignKey('users.id')),
-    Column('course_id', Integer, ForeignKey('course.id')),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow),
-    Column('finished_at',TIMESTAMP)
-)
+class Enrollments(Base):
+    __tablename__ = "enrollments"
 
-lesson = Table(
-    'lesson',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('lesson_name', String),
-    Column('course_id', Integer, ForeignKey('course.id')),
-    Column('video_url',String, default='no video yet !'),
-    Column('description',String),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow),
-    Column('duration', Integer)
-)
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    finished_at = Column(TIMESTAMP)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    course_id = Column(Integer, ForeignKey("courses.id"))
 
-quiz = Table(
-    'quiz',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('quiz_name', String),
-    Column('lesson_id', Integer, ForeignKey('lesson.id')),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow)
-)
+    owner = relationship("Users", back_populates="enrollment")
+    course = relationship("Courses", back_populates="enrollment")
 
-question = Table(
-    'question',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('question_text', String),
-    Column('quiz_id', Integer, ForeignKey('quiz.id')),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow)
-)
 
-answer = Table(
-    'answer',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('answer_text', String),
-    Column('is_correct', Boolean),
-    Column('question_id', Integer, ForeignKey('question.id'))
-)
+class Lessons(Base):
+    __tablename__ = "lessons"
 
-student_quiz_attempt = Table(
-    'student_quiz_attempt',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('student_id', Integer, ForeignKey('users.id')),
-    Column('quiz_id', Integer, ForeignKey('quiz.id')),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow),
-    Column('score', Integer),
-)
+    id = Column(Integer, primary_key=True, index=True)
+    lesson_name = Column(String)
+    video_url = Column(String, default="no video yet !")
+    description = Column(String)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    duration = Column(Integer)
+    course_id = Column(Integer, ForeignKey("courses.id"))
 
-course_rating = Table(
-    'course_rating',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('user_id', Integer, ForeignKey('users.id')),
-    Column('course_id', Integer, ForeignKey('course.id')),
-    Column('comment',String,default='no comments yet !'),
-    Column('rating', Integer, default=0),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow)
-)
+    course = relationship("Courses", back_populates="lesson")
+    quiz = relationship("Quizzes", back_populates="lesson")
+    lesson_rating = relationship("LessonRatings", back_populates="lesson_rating_lesson")
 
-lesson_rating = Table(
-    'lesson_rating',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('user_id', Integer, ForeignKey('users.id')),
-    Column('lesson_id', Integer, ForeignKey('lesson.id')),
-    Column('comment', String, default='no comments yet!'),
-    Column('rating', Integer, default=0),
-    Column('created_at', TIMESTAMP, default=datetime.utcnow)
-)
+
+class Quizzes(Base):
+    __tablename__ = "quizzes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    quiz_name = Column(String)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    lesson_id = Column(Integer, ForeignKey("lessons.id"))
+
+    lesson = relationship("Lessons", back_populates="quiz")
+    question = relationship("Questions", back_populates="quiz")
+    student_attempt = relationship("StudentQuizAttempts", back_populates="student_quiz_attempt_quiz")
+
+
+class Questions(Base):
+    __tablename__ = "questions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    question_text = Column(String)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+
+    quiz = relationship("Quizzes", back_populates="question")
+    answer = relationship("Answers", back_populates="question")
+
+
+class Answers(Base):
+    __tablename__ = "answers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    answers_text = Column(String)
+    is_correct = Column(Boolean, default=True)
+    question_id = Column(Integer, ForeignKey("questions.id"))
+
+    question = relationship("Questions", back_populates="answer")
+
+
+class StudentQuizAttempts(Base):
+    __tablename__ = "student_quiz_attempts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    score = Column(Integer)
+    student_id = Column(Integer, ForeignKey("users.id"))
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+
+    student_quiz_attempt_quiz = relationship("Quizzes", back_populates="student_attempt")
+    student_quiz_attempt_user = relationship("Users", back_populates="student_user")
+
+
+class CourseRatings(Base):
+    __tablename__ = "course_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    comment = Column(String, default="no comments yet !")
+    rating = Column(Integer, default=0)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    user_id = Column(Integer, ForeignKey("users.id"))
+    course_id = Column(Integer, ForeignKey("courses.id"))
+
+    course_rating_user = relationship("Users", back_populates="course_rating")
+    course_rating_course = relationship("Courses", back_populates="course_rating")
+
+
+class LessonRatings(Base):
+    __tablename__ = "lesson_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    comment = Column(String, default="no comments yet !")
+    rating = Column(Integer, default=0)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    user_id = Column(Integer, ForeignKey("users.id"))
+    lesson_id = Column(Integer, ForeignKey("lessons.id"))
+
+    lesson_rating_user = relationship("Users", back_populates="lesson_rating")
+    lesson_rating_lesson = relationship("Lessons", back_populates="lesson_rating")
+
+
 
