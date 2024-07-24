@@ -9,6 +9,7 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True)
+    username = Column(String, unique=True)
     hashed_password = Column(String(150))
     phone_number = Column(String(30))
     name = Column(String(100))
@@ -31,7 +32,6 @@ class Roles(Base):
     role_name = Column(String(20))
 
     role_owner = relationship("Users", back_populates="role")
-
 
 
 class Courses(Base):
