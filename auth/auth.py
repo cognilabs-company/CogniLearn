@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette import status
 from model.model import Users
 from database import db_dependency
@@ -28,8 +28,8 @@ class Token(BaseModel):
 
 class CreateUserRequest(BaseModel):
     email: str
-    password: str
-    username: str
+    password: str = Field(min_length=6)
+    username: str = Field(max_length=15)
     phone_number: str
     name: str
     is_active: bool
@@ -37,11 +37,19 @@ class CreateUserRequest(BaseModel):
     user_photo: str
 
 
+def hash_password(password):
+    return bcrypt_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return bcrypt_context.verify(plain_password, hashed_password)
+
+
 def authenticate_user(username: str, password: str, db):
     user = db.query(Users).filter(Users.username == username).first()
     if not user:
         return False
-    if not bcrypt_context.verify(password, user.hashed_password):
+    if not verify_password(password, user.hashed_password):
         return False
     return user
 
@@ -75,8 +83,8 @@ async def create_user(db: db_dependency,
         email=create_user_request.email,
         name=create_user_request.name,
         role_id=create_user_request.role_id,
-        username = create_user_request.username,
-        hashed_password=bcrypt_context.hash(create_user_request.password),
+        username=create_user_request.username,
+        hashed_password=hash_password(create_user_request.password),
         phone_number=create_user_request.phone_number,
         user_photo=create_user_request.user_photo
     )

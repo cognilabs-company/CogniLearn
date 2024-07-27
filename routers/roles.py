@@ -26,12 +26,10 @@ async def get_all(db: db_dependency, user: user_dependency, ):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    user_check = db.query(Users).filter(Users.id == user.get('id')).first()
+    if user.get('user_role') == 1 or user.get('user_role') == 2:
+        return db.query(Roles).all()
 
-    if user_check.role_id != 1:
-        raise HTTPException(status_code=406, detail='Not Allowed')
-
-    return db.query(Roles).all()
+    raise HTTPException(status_code=403, detail="Forbidden")
 
 
 @router.post("/create-role", status_code=status.HTTP_201_CREATED)
@@ -40,12 +38,11 @@ async def create_role(user: user_dependency, db: db_dependency,
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    user_check = db.query(Users).filter(Users.id == user.get('id')).first()
+    if user.get('user_role') == 1 or user.get('user_role') == 2:
+        role_request_model = Roles(**role_request_model.model_dump())
+        db.add(role_request_model)
+        db.commit()
 
-    if user_check.role_id != 1:
-        raise HTTPException(status_code=406, detail='Not Allowed')
+    raise HTTPException(status_code=403, detail="Forbidden")
 
-    role_request_model = Roles(**role_request_model.model_dump())
 
-    db.add(role_request_model)
-    db.commit()
