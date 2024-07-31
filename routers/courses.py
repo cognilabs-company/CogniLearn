@@ -6,7 +6,7 @@ from sqlalchemy import func
 
 from auth.auth import get_current_user
 from database import db_dependency
-from model.model import Courses
+from model.model import Courses, Users, Roles
 
 router = APIRouter(
     prefix='/courses',
@@ -32,33 +32,37 @@ async def get_all_courses(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if user.get('user_role') == 1 or user.get('user_role') == 2:
+    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+
+    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
         return db.query(Courses).all()
 
     raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@router.get("/get-course/{course_name}", status_code=status.HTTP_200_OK)
+@router.get("/get-course/{name}", status_code=status.HTTP_200_OK)
 async def get_course(user: user_dependency, db: db_dependency,
-                     courses_name: str = Path(max_length=100)):
+                     name: str = Path(max_length=100)):
 
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if user.get('user_role') == 1 or user.get('user_role') == 2:
+    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
 
+    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
         courses = db.query(Courses).all()
         request = []
-
+        if courses is None:
+            raise HTTPException(status_code=404, detail="Not found")
         for course in courses:
-            if func.lower(course.course_name) == courses_name:
+            if func.lower(course.course_name) == name.lower():
                 request.append(course)
             else:
                 continue
-
-        if course is None:
-            raise HTTPException(status_code=204, detail="Not found")
-
+            if course is None:
+                raise HTTPException(status_code=404, detail="Not found")
         return request
 
     raise HTTPException(status_code=403, detail="Forbidden")
@@ -70,7 +74,10 @@ async def add_course(user: user_dependency, db: db_dependency,
     if user in None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if user.get('user_role') == 1 or user.get('user_role') == 2:
+    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+
+    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
         course_model = Courses(**request_model.model_dump())
         db.add(course_model)
         db.commit()
@@ -84,7 +91,10 @@ async def edit_course(user: user_dependency, db: db_dependency,
     if user in None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if user.get('user_role') == 1 or user.get('user_role') == 2:
+    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+
+    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
         course_model = db.query(Courses).filter(Courses.id == course_id).first()
 
         if course_model is None:
@@ -105,7 +115,10 @@ async def delete_course(user: user_dependency, db: db_dependency, course_id: int
     if user in None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if user.get('user_role') == 1 or user.get('user_role') == 2:
+    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+
+    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
         course_model = db.query(Courses).filter(Courses.id == course_id).first()
         if course_model is None:
             raise HTTPException(status_code=404, detail="Not Found")
@@ -115,3 +128,4 @@ async def delete_course(user: user_dependency, db: db_dependency, course_id: int
         db.commit()
 
     raise HTTPException(status_code=403, detail="Forbidden")
+
