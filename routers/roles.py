@@ -49,6 +49,5 @@ async def create_role(user: user_dependency, db: db_dependency,
         db.add(role_request_model)
         db.commit()
 
-    raise HTTPException(status_code=403, detail="Forbidden")
 
 
