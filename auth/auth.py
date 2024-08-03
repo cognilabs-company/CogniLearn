@@ -28,13 +28,12 @@ class Token(BaseModel):
 
 class CreateUserRequest(BaseModel):
     email: str
-    password: str = Field(min_length=6)
     username: str = Field(max_length=15)
     phone_number: str
     name: str
-    is_active: bool
-    role_id: int
     user_photo: str
+    password: str = Field(min_length=6)
+    confirm_password:  str = Field(min_length=6)
 
 
 def hash_password(password):
@@ -81,12 +80,24 @@ async def create_user(db: db_dependency,
     create_user_model = Users(
         email=create_user_request.email,
         name=create_user_request.name,
-        role_id=create_user_request.role_id,
+        role_id=3,
         username=create_user_request.username,
         hashed_password=hash_password(create_user_request.password),
         phone_number=create_user_request.phone_number,
         user_photo=create_user_request.user_photo
     )
+
+    if create_user_request.password != create_user_request.confirm_password:
+        raise HTTPException(status_code=401, detail='Error on password')
+
+    user_email = db.query(Users).filter(Users.email == create_user_request.email).first()
+    user_username = db.query(Users).filter(Users.username == create_user_request.username).first()
+
+    if user_email is not None:
+        raise HTTPException(status_code=409, detail='Email already exist')
+
+    if user_username is not None:
+        raise HTTPException(status_code=409, detail='Username already exist')
 
     db.add(create_user_model)
     db.commit()
