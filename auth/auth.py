@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
-from model.model import Users
+from model.model import Users, Roles
 from database import db_dependency
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -31,7 +31,6 @@ class CreateUserRequest(BaseModel):
     username: str = Field(max_length=15)
     phone_number: str
     name: str
-    user_photo: str
     password: str = Field(min_length=6)
     confirm_password:  str = Field(min_length=6)
 
@@ -74,24 +73,35 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
                             detail='Could not validate user.')
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/")
 async def create_user(db: db_dependency,
                       create_user_request: CreateUserRequest):
-    create_user_model = Users(
-        email=create_user_request.email,
-        name=create_user_request.name,
-        role_id=3,
-        username=create_user_request.username,
-        hashed_password=hash_password(create_user_request.password),
-        phone_number=create_user_request.phone_number,
-        user_photo=create_user_request.user_photo
-    )
 
     if create_user_request.password != create_user_request.confirm_password:
         raise HTTPException(status_code=401, detail='Error on password')
 
+    role = db.query(Roles).filter(Roles.role_name == "user").first()
+    if role is None:
+        create_role = Roles(
+            role_name="user"
+        )
+        db.add(create_role)
+        db.commit()
+
+    role_new = db.query(Roles).filter(Roles.role_name == "user").first()
+
+    create_user_model = Users(
+        email=create_user_request.email,
+        name=create_user_request.name,
+        role_id=role_new.id,
+        username=create_user_request.username,
+        hashed_password=hash_password(create_user_request.password),
+        phone_number=create_user_request.phone_number,
+    )
+
     user_email = db.query(Users).filter(Users.email == create_user_request.email).first()
     user_username = db.query(Users).filter(Users.username == create_user_request.username).first()
+    user_phone = db.query(Users).filter(Users.phone_number == create_user_request.phone_number).first()
 
     if user_email is not None:
         raise HTTPException(status_code=409, detail='Email already exist')
@@ -99,8 +109,12 @@ async def create_user(db: db_dependency,
     if user_username is not None:
         raise HTTPException(status_code=409, detail='Username already exist')
 
+    if user_phone is not None:
+        raise HTTPException(status_code=409, detail='Phone already exist')
+
     db.add(create_user_model)
     db.commit()
+    return {'massage': 'Account created successfully'}
 
 
 @router.post("/token", response_model=Token)
