@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
-from model.model import Users
+from model.model import Users, Roles
 from database import db_dependency
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -74,21 +74,30 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
                             detail='Could not validate user.')
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/")
 async def create_user(db: db_dependency,
                       create_user_request: CreateUserRequest):
+
+    if create_user_request.password != create_user_request.confirm_password:
+        raise HTTPException(status_code=401, detail='Error on password')
+
+    role = db.query(Roles).filter(Roles.role_name == "user").first()
+    if role is None:
+        create_role = Roles(
+            role_name="user"
+        )
+        db.add(create_role)
+        db.commit()
+
     create_user_model = Users(
         email=create_user_request.email,
         name=create_user_request.name,
-        role_id=3,
+        role_id=role.id,
         username=create_user_request.username,
         hashed_password=hash_password(create_user_request.password),
         phone_number=create_user_request.phone_number,
         user_photo=create_user_request.user_photo
     )
-
-    if create_user_request.password != create_user_request.confirm_password:
-        raise HTTPException(status_code=401, detail='Error on password')
 
     user_email = db.query(Users).filter(Users.email == create_user_request.email).first()
     user_username = db.query(Users).filter(Users.username == create_user_request.username).first()
@@ -101,6 +110,7 @@ async def create_user(db: db_dependency,
 
     db.add(create_user_model)
     db.commit()
+    return {'massage': 'Account created successfully'}
 
 
 @router.post("/token", response_model=Token)
