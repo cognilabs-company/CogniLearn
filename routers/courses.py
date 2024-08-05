@@ -6,7 +6,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 from sqlalchemy import func
 
-from auth.auth import get_current_user
+from utils import get_current_user
 from database import db_dependency
 from model.model import Courses, Users, Roles
 
