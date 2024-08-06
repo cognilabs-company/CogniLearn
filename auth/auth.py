@@ -102,7 +102,6 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     return {'access_token': token, 'token_type': 'bearer'}
 
 
-
 @router.patch("/edit-profile")
 async def edit_profile(db: db_dependency,
                        token: dict = Depends(get_current_user),
