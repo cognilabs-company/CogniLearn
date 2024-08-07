@@ -13,6 +13,12 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(router, tags=['main'])
 
+
+@app.get("/healthy")
+def health_check():
+    return {'status': 'Healthy'}
+
+
 app.include_router(auth.router)
 app.include_router(roles.router)
 app.include_router(users.router)
