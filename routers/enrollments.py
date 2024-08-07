@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from auth.auth import get_current_user
 from database import db_dependency
 from fastapi import APIRouter, Depends, HTTPException, Path
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 
 from model.model import Users, Roles, Enrollments, Courses
 
@@ -28,6 +28,17 @@ class EditEnrollmentRequestModel(BaseModel):
     is_finished: bool = Field(default=False)
 
 
+class ReadEnrollments(BaseModel):
+    id: int
+    created_at: datetime
+    finished_at: datetime
+    user_id: int
+    course_id: int
+
+
+# class ReadEnrollment(BaseModel):
+
+
 def show_enrollment(enrollment_id: int, created_at: datetime, finished_at: datetime, user_id: int, username: str,
                     course_id: int, course_name: str):
     return [
@@ -41,7 +52,7 @@ def show_enrollment(enrollment_id: int, created_at: datetime, finished_at: datet
     ]
 
 
-@router.get("/get-all-enrollments")
+@router.get("/get-all-enrollments", response_model=List[ReadEnrollments], status_code=200)
 async def get_all_enrollments(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
@@ -51,12 +62,18 @@ async def get_all_enrollments(user: user_dependency, db: db_dependency):
     if user_role.role_name not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    return db.query(Enrollments).all()
+    enrollments = db.query(Enrollments).all()
+    if enrollments is None:
+        raise HTTPException(status_code=404, detail='Not Found')
+
+    response_enrollments = db.query(Enrollments).all()
+
+    return list(response_enrollments)
 
 
 @router.get("/get-enrollment/{enrollment_id}")
 async def get_enrollment(user: user_dependency, db: db_dependency,
-                         enrollment_id: int = Path(gt=0)):
+                         enrollment_id: Annotated[int, Path(description='The ID of the ENROLLMENT to get', gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
@@ -76,7 +93,7 @@ async def get_enrollment(user: user_dependency, db: db_dependency,
 
 @router.get("/get-enrollments-by-user_id/{user_id}")
 async def get_enrollment_by_user_id(user: user_dependency, db: db_dependency,
-                                    user_id: int = Path(gt=0)):
+                                    user_id: Annotated[int, Path(description='The ID of the item to get', gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
     enrollments = db.query(Enrollments).filter(Enrollments.user_id == user_id).all()
@@ -88,7 +105,9 @@ async def get_enrollment_by_user_id(user: user_dependency, db: db_dependency,
 
 
 @router.get("get-enrollments-by-course_id/{course_id}")
-async def get_enrollment_by_course_id(user: user_dependency, db: db_dependency, course_id: int = Path(gt=0)):
+async def get_enrollment_by_course_id(user: user_dependency, db: db_dependency,
+                                      course_id: Annotated[int, Path(description='The ID of the COURSE em to get',
+                                                                           gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
     enrollments = db.query(Enrollments).filter(Enrollments.course_id == course_id).all()
@@ -117,7 +136,8 @@ async def add_enrollment(user: user_dependency, db: db_dependency,
 
 @router.put("/edit-enrollment/{enrollment_id}")
 async def edit_enrollment(user: user_dependency, db: db_dependency,
-                          request_model: EditEnrollmentRequestModel, enrollment_id: int = Path(gt=0)):
+                          request_model: EditEnrollmentRequestModel,
+                          enrollment_id: Annotated[int, Path(description='The ID of the ENROLLMENT to edit', gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
@@ -150,7 +170,7 @@ async def edit_enrollment(user: user_dependency, db: db_dependency,
 
 @router.delete("/delete-enrollment/{enrollment_id}")
 async def delete_enrollment(user: user_dependency, db: db_dependency,
-                            enrollment_id: int = Path(gt=0)):
+                            enrollment_id: Annotated[int, Path(description='The ID of the ENROLLMENT to delete', gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
