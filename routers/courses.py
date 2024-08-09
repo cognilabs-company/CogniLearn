@@ -29,18 +29,17 @@ class EditCourseRequestModel(BaseModel):
     is_active: bool = Field(default=True)
 
 
-@router.get("/get-all", status_code=status.HTTP_200_OK)
+@router.get("/get-all-courses")
 async def get_all_courses(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if user_role.role_name not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
-    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
-        return db.query(Courses).all()
-
-    raise HTTPException(status_code=403, detail="Forbidden")
+    return db.query(Courses).all()
 
 
 @router.get("/get-course/{name}")
@@ -80,15 +79,16 @@ async def add_course(db: db_dependency, user: user_dependency,
 
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if user_role.role_name not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
-    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
-        request_model = Courses(**request_model.model_dump())
-        db.add(request_model)
-        db.commit()
-        return {'massage': 'course added'}
+    request_model = Courses(**request_model.model_dump())
+    db.add(request_model)
+    db.commit()
+    return {'message': 'Course successfully added'}
 
 
-@router.put("/edit-course/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/edit-course/{course_id}")
 async def edit_course(user: user_dependency, db: db_dependency,
                       request_model: EditCourseRequestModel, course_id: int = Path(gt=0)):
     if user in None:
@@ -97,22 +97,23 @@ async def edit_course(user: user_dependency, db: db_dependency,
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
 
-    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
-        course_model = db.query(Courses).filter(Courses.id == course_id).first()
+    if user_role.role_name not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
-        if course_model is None:
-            raise HTTPException(status_code=404, detail="Not Found")
+    course_model = db.query(Courses).filter(Courses.id == course_id).first()
 
-        course_model.course_name = request_model.course_name
-        course_model.duration = request_model.duration
-        course_model.is_active = request_model.is_active
-        db.add(course_model)
-        db.commit()
+    if course_model is None:
+        raise HTTPException(status_code=404, detail="Not Found")
 
-    raise HTTPException(status_code=403, detail="Forbidden")
+    course_model.course_name = request_model.course_name
+    course_model.duration = request_model.duration
+    course_model.is_active = request_model.is_active
+    db.add(course_model)
+    db.commit()
+    return {'message': 'Course successfully updated'}
 
 
-@router.delete("/delete_course/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete-course/{course_id}")
 async def delete_course(user: user_dependency, db: db_dependency, course_id: int = Path(gt=0)):
 
     if user in None:
@@ -120,15 +121,16 @@ async def delete_course(user: user_dependency, db: db_dependency, course_id: int
 
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if user_role.role_name not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
-    if user_role.role_name == "admin" or user_role.role_name == "super_admin":
-        course_model = db.query(Courses).filter(Courses.id == course_id).first()
-        if course_model is None:
-            raise HTTPException(status_code=404, detail="Not Found")
+    course_model = db.query(Courses).filter(Courses.id == course_id).first()
+    if course_model is None:
+        raise HTTPException(status_code=404, detail="Not Found")
 
-        course_model.is_active = False
-        db.add(course_model)
-        db.commit()
+    course_model.is_active = False
+    db.add(course_model)
+    db.commit()
+    return {'message': 'Course successfully deleted'}
 
-    raise HTTPException(status_code=403, detail="Forbidden")
 

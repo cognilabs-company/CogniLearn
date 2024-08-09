@@ -2,3 +2,5 @@
 migrations/versions
 user_photos
 venv
+.venv
+/testdb.db
