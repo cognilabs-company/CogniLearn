@@ -1,9 +1,5 @@
-from typing import Annotated
-from sqlalchemy.orm import Session
-from datetime import datetime
 from database import get_db
 from tests.utils import *
-from model.model import Users
 from fastapi import status, Depends
 from utils import get_current_user
 
@@ -24,7 +20,6 @@ def test_get_all_users_authenticated(test_user, test_role):
 
 def test_get_user_authenticated(test_user, test_role):
     response = client.get("/users/get-user")
-    data = test_user.created_at.isoformat()
     print(response.json())
     assert response.status_code == status.HTTP_200_OK
     assert response.json()['id'] == 1
