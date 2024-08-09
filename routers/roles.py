@@ -19,14 +19,13 @@ router = APIRouter(
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-@router.post("/create-role")
+@router.post("/create-role", status_code=status.HTTP_201_CREATED)
 async def create_role(user: user_dependency, db: db_dependency,
                       role_request_model: RoleRequestModel):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    user_role = db.query(Roles).filter(Roles.id == user.get('role_id')).first()
     role_exists = db.query(Roles).filter(Roles.role_name == role_request_model.role_name).first()
 
     if user_role.role_name not in ["admin", "super_admin"]:
@@ -48,8 +47,7 @@ async def get_all(db: db_dependency,
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
 
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    user_role = db.query(Roles).filter(Roles.id == user.get('role_id')).first()
 
     if user_role.role_name not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
