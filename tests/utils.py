@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
@@ -9,8 +9,9 @@ from database import Base
 from main import app
 from fastapi.testclient import TestClient
 import pytest
-from model.model import Roles, Users
+from model.model import Roles, Users, Courses, Enrollments
 from auth.auth import bcrypt_context
+from utils import get_current_user
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./testdb.db"
 
@@ -90,4 +91,45 @@ def test_user(test_role):
     # with engine.connect() as connection:
     #     connection.execute(text("DELETE FROM users;"))
     #     connection.commit()
+
+
+@pytest.fixture()
+def test_course():
+    course = Courses(
+        id=1,
+        course_name='Fast API',
+        created_at=datetime.utcnow(),
+        duration=3,
+        is_active=True
+    )
+    db = TestingSessionLocal()
+    db.add(course)
+    db.commit()
+    yield course
+    db.query(Courses).delete()
+    db.commit()
+    db.close()
+
+
+@pytest.fixture
+def test_enrollments(test_course, test_user):
+    data_start = datetime.utcnow()
+    data_finish = data_start + timedelta(minutes=5)
+    enrollment = Enrollments(
+        id=1,
+        created_at=data_start,
+        finished_at=data_finish,
+        user_id=test_user.id,
+        course_id=test_course.id
+    )
+    db = TestingSessionLocal()
+    db.add(enrollment)
+    db.commit()
+    yield enrollment
+    db.query(Enrollments).delete()
+    db.commit()
+    db.close()
+
+
+
 

@@ -1,6 +1,6 @@
 from database import get_db
 from tests.utils import *
-from fastapi import status, Depends
+from fastapi import status
 from utils import get_current_user
 
 app.dependency_overrides[get_db] = override_get_db

@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from auth.auth import get_current_user
 from database import db_dependency
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from typing import Annotated, Optional, List
 
 from model.model import Users, Roles, Enrollments, Courses
@@ -13,7 +13,6 @@ router = APIRouter(
     prefix='/enrollments',
     tags=['enrollments']
 )
-
 
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
@@ -41,34 +40,34 @@ class ReadEnrollments(BaseModel):
 
 def show_enrollment(enrollment_id: int, created_at: datetime, finished_at: datetime, user_id: int, username: str,
                     course_id: int, course_name: str):
-    return [
-        {'id': enrollment_id},
-        {'created_at': created_at},
-        {'finished_at': finished_at},
-        {'user_id': user_id},
-        {'username': username},
-        {'course_id': course_id},
-        {'course_name': course_name}
-    ]
+    return [{
+        'id': enrollment_id,
+        'created_at': created_at,
+        'finished_at': finished_at,
+        'user_id': user_id,
+        'username': username,
+        'course_id': course_id,
+        'course_name': course_name
+    }]
 
 
-@router.get("/get-all-enrollments", response_model=List[ReadEnrollments], status_code=200)
+@router.get("/get-all-enrollments", response_model=List[ReadEnrollments])
 async def get_all_enrollments(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
-    if user_role.role_name not in ["admin", "super_admin"]:
+    role = db.query(Roles).filter(Roles.id == user.get('role_id')).first()
+
+    if role.role_name not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
 
     enrollments = db.query(Enrollments).all()
-    if enrollments is None:
+    if not enrollments:
         raise HTTPException(status_code=404, detail='Not Found')
 
     response_enrollments = db.query(Enrollments).all()
 
-    return list(response_enrollments)
+    return response_enrollments
 
 
 @router.get("/get-enrollment/{enrollment_id}")
@@ -91,23 +90,24 @@ async def get_enrollment(user: user_dependency, db: db_dependency,
     return show_model
 
 
-@router.get("/get-enrollments-by-user_id/{user_id}")
-async def get_enrollment_by_user_id(user: user_dependency, db: db_dependency,
-                                    user_id: Annotated[int, Path(description='The ID of the item to get', gt=0)]):
+@router.get("/get-enrollments-by-user/{user_id}")
+async def get_enrollment_by_user(user: user_dependency, db: db_dependency,
+                                 user_id: Annotated[int, Path(description='The ID of the item to get', gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
+
     enrollments = db.query(Enrollments).filter(Enrollments.user_id == user_id).all()
 
-    if enrollments is None:
+    if not enrollments:
         raise HTTPException(status_code=404, detail='Not Found')
 
-    return enrollments
+    return db.query(Enrollments).filter(Enrollments.user_id == user_id).all()
 
 
-@router.get("get-enrollments-by-course_id/{course_id}")
-async def get_enrollment_by_course_id(user: user_dependency, db: db_dependency,
-                                      course_id: Annotated[int, Path(description='The ID of the COURSE em to get',
-                                                                           gt=0)]):
+@router.get("get-enrollments-by-course/{course_id}")
+async def get_enrollment_by_course(user: user_dependency, db: db_dependency,
+                                   course_id: Annotated[int, Path(description='The ID of the COURSE em to get',
+                                                                  gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
     enrollments = db.query(Enrollments).filter(Enrollments.course_id == course_id).all()
@@ -141,8 +141,7 @@ async def edit_enrollment(user: user_dependency, db: db_dependency,
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    user_role = db.query(Roles).filter(Roles.id == user.get('role_id')).first()
     if user_role.role_name not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
 
@@ -170,12 +169,12 @@ async def edit_enrollment(user: user_dependency, db: db_dependency,
 
 @router.delete("/delete-enrollment/{enrollment_id}")
 async def delete_enrollment(user: user_dependency, db: db_dependency,
-                            enrollment_id: Annotated[int, Path(description='The ID of the ENROLLMENT to delete', gt=0)]):
+                            enrollment_id: Annotated[
+                                int, Path(description='The ID of the ENROLLMENT to delete', gt=0)]):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    user_role = db.query(Roles).filter(Roles.id == user.get('role_id')).first()
     if user_role.role_name not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
 
@@ -187,4 +186,3 @@ async def delete_enrollment(user: user_dependency, db: db_dependency,
     db.commit()
 
     return {'message': 'Enrollment successfully deleted'}
-
