@@ -3,12 +3,12 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, status, HTTPException, Path
 from typing import Annotated
 
-from pydantic import BaseModel, Field
 from sqlalchemy import func
 
 from utils import get_current_user
 from database import db_dependency
 from model.model import Courses, Users, Roles
+from routers.scheme import CourseRequestModel,EditCourseRequestModel
 
 router = APIRouter(
     prefix='/courses',
@@ -16,17 +16,6 @@ router = APIRouter(
 )
 
 user_dependency = Annotated[dict, Depends(get_current_user)]
-
-
-class CourseRequestModel(BaseModel):
-    course_name: str
-    duration: int = Field(gt=0)
-
-
-class EditCourseRequestModel(BaseModel):
-    course_name: str
-    duration: int = Field(gt=0)
-    is_active: bool = Field(default=True)
 
 
 @router.get("/get-all", status_code=status.HTTP_200_OK)
