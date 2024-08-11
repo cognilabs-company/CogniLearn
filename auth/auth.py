@@ -1,7 +1,6 @@
-import shutil
 from datetime import timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException,UploadFile
+from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 from model.model import Users, Roles
 from database import db_dependency
@@ -10,8 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from auth.scheme import CreateUserRequest,Token
 from utils import hash_password,authenticate_user,create_access_token, get_current_user,verify_password
 from model.model import Users as users
-import os, re
-from fastapi.responses import Response
+import re
 
 
 router = APIRouter(
@@ -100,61 +98,6 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     token = create_access_token(user.username, user.id, timedelta(minutes=20))
 
     return {'access_token': token, 'token_type': 'bearer'}
-
-
-
-@router.patch("/edit-profile")
-async def edit_profile(db: db_dependency,
-                       token: dict = Depends(get_current_user),
-                       email: str = None,
-                       name: str = None,
-                       username: str = None,
-                       phone_number: str = None,
-                       user_photo: UploadFile = None
-):
-    if token is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
-    user_id = token.get('id')
-
-    user = db.query(users).filter(users.id == user_id).first()
-
-    if email:
-        email_exists = db.query(users).filter(users.email == email).first()
-        if email_exists:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists")
-
-    if username:
-        username_exists = db.query(users).filter(users.username == username).first()
-        if username_exists:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already exists")
-
-    if phone_number:
-        phone_exists = db.query(users).filter(users.phone_number == phone_number).first()
-        if phone_exists:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Phone number already exists")
-
-    if email:
-        user.email = email
-    if name:
-        user.name = name
-    if username:
-        user.username = username
-    if phone_number:
-        user.phone_number = phone_number
-
-    if user_photo:
-        photos_dir = "user_photos"
-        if not os.path.exists(photos_dir):
-            os.makedirs(photos_dir)
-        photo_path = os.path.join(photos_dir, f"{user_id}_{user_photo.filename}")
-        with open(photo_path, "wb") as buffer:
-            shutil.copyfileobj(user_photo.file, buffer)
-        user.user_photo = photo_path
-
-    db.commit()
-    db.refresh(user)
-
-    return {"message": "Profile updated successfully"}
 
 
 @router.put("/password")

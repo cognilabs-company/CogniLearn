@@ -26,7 +26,7 @@ def verify_password(plain_password, hashed_password):
 
 
 def authenticate_user(username: str, password: str, db):
-    user = db.query(Users).filter(Users.username == username).first()
+    user = db.query(Users).filter(Users.email == username).first()
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
