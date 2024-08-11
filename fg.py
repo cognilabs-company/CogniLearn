@@ -23,16 +23,18 @@ def get_email_template_dashboard(user_email, code):
 
     email.set_content(
         f"""
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h1 style="color: #333;">Hi! 😊</h1>
-            <p>You requested to reset your password.</p>
-            <p>Please enter the verification code below to reset your password:</p>
-            <div style="margin: 20px 0; padding: 15px; background-color: #4CAF50; color: white; font-size: 24px; text-align: center; border-radius: 5px;">
-                {code}
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; border: solid 2px rgb(40,169,8); text-align: center; width: 550px; margin: auto; background-color: rgba(144, 238, 144, 0.486);">
+            <img src="https://media.licdn.com/dms/image/D560BAQE4NBkII7lrMw/company-logo_200_200/0/1701661109135/cognilabs_software_logo?e=2147483647&v=beta&t=MIQutO18XukzN5MPlywOiM8eJ0YdCZ7VRRXzisS-yMU" alt="Forgot" height="150px" width="150px" style=" border-radius: 50%"/>
+                <h1>Cognilabs developers</h1> 
+                <h2 style="color: #333;">Hi! 😊</h2>
+                <p>You requested to reset your password.</p>
+                <p>Please enter the verification code below to reset your password:</p>
+                <div style="margin: 20px 0; padding: 15px; background-color: #4CAF50; color: white; font-size: 24px; text-align: center; border-radius: 5px;">
+                    {code}
+                </div>
+                <p>If you didn’t request this password reset, please ignore this email.</p>
             </div>
-            <p>If you didn’t request this password reset, please ignore this email.</p>
-        </div>
-        """,
+            """,
         subtype='html'
     )
     return email
