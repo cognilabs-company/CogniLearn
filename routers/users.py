@@ -17,7 +17,6 @@ router = APIRouter(
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-
 @router.patch("/edit-profile")
 async def edit_profile(db: db_dependency,
                        token: dict = Depends(get_current_user),
@@ -70,41 +69,6 @@ async def edit_profile(db: db_dependency,
     db.refresh(user)
 
     return {"message": "Profile updated successfully"}
-
-
-@router.get('/get-all-users', status_code=status.HTTP_200_OK)
-async def get_all(db: db_dependency,
-                  user: user_dependency
-                  ):
-
-    if user is None:
-        raise HTTPException(status_code=401, detail="Authentication failed")
-
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
-
-    if user_role.role_name not in ["admin", "super_admin"]:
-        raise HTTPException(status_code=403, detail="Forbidden")
-
-    users = db.query(Users, Roles).join(Roles, Users.role_id == Roles.id).all()
-
-    response = [
-        {
-            "id": user.id,
-            "email": user.email,
-            "username": user.username,
-            "name": user.name,
-            "phone_number": user.phone_number,
-            "created_at": user.created_at,
-            "is_active": user.is_active,
-            "user_photo": user.user_photo,
-            "role_id": user.role_id,
-            "role_name": role.role_name
-        }
-        for user, role in users
-    ]
-
-    return response
 
 
 @router.get("/get-user", response_model=UserInfo)
