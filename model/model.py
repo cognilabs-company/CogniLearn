@@ -30,7 +30,7 @@ class Roles(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     role_name = Column(String(20))
-
+    # role_owner_id = Column(Integer, ForeignKey("users.id"))
     role_owner = relationship("Users", back_populates="role")
 
 
@@ -77,6 +77,21 @@ class Lessons(Base):
     lesson_rating = relationship("LessonRatings", back_populates="lesson_rating_lesson")
 
 
+class LessonRatings(Base):
+    __tablename__ = "lesson_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    comment = Column(String, default="no comments yet !")
+    rating = Column(Integer, default=0)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    user_id = Column(Integer, ForeignKey("users.id"))
+    lesson_id = Column(Integer, ForeignKey("lessons.id"))
+    
+
+    lesson_rating_user = relationship("Users", back_populates="lesson_rating")
+    lesson_rating_lesson = relationship("Lessons", back_populates="lesson_rating")
+
+
 class Quizzes(Base):
     __tablename__ = "quizzes"
 
@@ -84,7 +99,6 @@ class Quizzes(Base):
     quiz_name = Column(String)
     created_at = Column(TIMESTAMP, default=datetime.utcnow())
     lesson_id = Column(Integer, ForeignKey("lessons.id"))
-
     lesson = relationship("Lessons", back_populates="quiz")
     question = relationship("Questions", back_populates="quiz")
     student_attempt = relationship("StudentQuizAttempts", back_populates="student_quiz_attempt_quiz")
@@ -140,18 +154,6 @@ class CourseRatings(Base):
     course_rating_course = relationship("Courses", back_populates="course_rating")
 
 
-class LessonRatings(Base):
-    __tablename__ = "lesson_ratings"
-
-    id = Column(Integer, primary_key=True, index=True)
-    comment = Column(String, default="no comments yet !")
-    rating = Column(Integer, default=0)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow())
-    user_id = Column(Integer, ForeignKey("users.id"))
-    lesson_id = Column(Integer, ForeignKey("lessons.id"))
-
-    lesson_rating_user = relationship("Users", back_populates="lesson_rating")
-    lesson_rating_lesson = relationship("Lessons", back_populates="lesson_rating")
 
 
 

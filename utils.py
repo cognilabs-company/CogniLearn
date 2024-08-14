@@ -6,6 +6,8 @@ from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 import re
+from database import db_dependency
+from model.model import Roles,Users
 
 
 SECRET_KEY = '197b2c37c391bed93fe80344fe73b806947a65e36206e05a1a23c2fa12702fe3'
@@ -23,6 +25,27 @@ def hash_password(password):
 
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
+
+
+
+def is_admin(db: db_dependency, user):
+    user_id = user.get('id')
+    current_user = db.query(Users).filter(Users.id == user_id).first()
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    role_name = user_role.role_name
+    if not current_user:
+        return False
+    if not user_role:
+        return False
+    if role_name == 'admin' and user_role.role_name == 'superuser':
+        return True
+    if role_name == 'admin':
+        return 'admin'
+    elif role_name == 'superuser':
+        return 'superuser'
+
+    return False
+
 
 
 def authenticate_user(username: str, password: str, db):

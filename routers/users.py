@@ -1,12 +1,13 @@
 import shutil
 from fastapi import APIRouter, status, HTTPException, Depends, UploadFile
 from model.model import Users, Roles
-from utils import get_current_user
+from utils import get_current_user, is_admin
 from database import db_dependency
 from typing import Annotated, List
 from routers.scheme import UserInfo
 import os
 from model.model import Users as users
+from routers.scheme import UserInfo, UserInfoForUsers
 
 
 router = APIRouter(
@@ -72,18 +73,14 @@ async def edit_profile(db: db_dependency,
     return {"message": "Profile updated successfully"}
 
 
-@router.get('/get-all-users', status_code=status.HTTP_200_OK)
-async def get_all(db: db_dependency,
-                  user: user_dependency
-                  ):
-
+ 
+@router.get("/get-all-users", response_model=List[UserInfo],status_code=status.HTTP_200_OK)
+async def get_all(db: db_dependency, user: user_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if not is_admin(db, user):
 
-    if user_role.role_name not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
 
     users = db.query(Users, Roles).join(Roles, Users.role_id == Roles.id).all()
@@ -106,7 +103,6 @@ async def get_all(db: db_dependency,
 
     return response
 
-
 @router.get("/get-user", response_model=UserInfo)
 async def get_all(db: db_dependency,
                   user: user_dependency):
@@ -115,8 +111,22 @@ async def get_all(db: db_dependency,
 
     return db.query(Users).filter(Users.id == user.get('id')).first()
 
+    if is_admin(db, user):
+        return db.query(Users).all()
+    
+    if not is_admin(db, user):
+            return [
+                UserInfo(
+                    id = 99999999999999999,
+                    name=user.name,
+                    email=user.email,
+                    username=user.username,
+                    phone_number=user.phone_number,
+                    user_photo=user.user_photo
+                )
+                for user in db.query(Users).all()
+            ]
 
-
-
+    raise HTTPException(status_code=403, detail="You do not have permissions")
 
 
