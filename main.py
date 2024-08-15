@@ -13,6 +13,12 @@ router = APIRouter()
 
 Base.metadata.create_all(bind=engine)
 
+
+@app.get("/healthy")
+def health_check():
+    return {'status': 'Healthy'} 
+
+
 app.include_router(router, tags=['main'])
 app.include_router(auth.router)
 app.include_router(admin.router)
