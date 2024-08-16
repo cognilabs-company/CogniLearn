@@ -25,12 +25,12 @@ def hash_password(password):
 def is_admin(db: db_dependency, user):
     user_id = user.get('id')
     current_user = db.query(Users).filter(Users.id == user_id).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
-    role_name = user_role.role_name
     if not current_user:
         return False
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
     if not user_role:
         return False
+    role_name = user_role.role_name
     if role_name == 'admin' and user_role.role_name == 'superuser':
         return True
     if role_name == 'admin':
@@ -61,7 +61,7 @@ def create_access_token(username: str, user_id: int, expires_delta: timedelta):
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get('sub')
@@ -73,4 +73,3 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
-
