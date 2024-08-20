@@ -74,3 +74,8 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
 
+
+def teacher_only(user_role: str = Depends(get_current_user)):
+    if user_role != "teacher":
+        raise HTTPException(status_code=403, detail="Operation not permitted")
+    

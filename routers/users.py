@@ -81,7 +81,7 @@ async def get_all(db: db_dependency, user: user_dependency):
 
     if not is_admin(db, user):
 
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
     users = db.query(Users, Roles).join(Roles, Users.role_id == Roles.id).all()
 
@@ -103,7 +103,7 @@ async def get_all(db: db_dependency, user: user_dependency):
 
     return response
 
-@router.get("/get-user", response_model=UserInfo)
+@router.get("/get-user", response_model=UserInfoForUsers)
 async def get_all(db: db_dependency,
                   user: user_dependency):
     if user is None:
@@ -111,21 +111,18 @@ async def get_all(db: db_dependency,
 
     return db.query(Users).filter(Users.id == user.get('id')).first()
 
-    if is_admin(db, user):
-        return db.query(Users).all()
     
     if not is_admin(db, user):
-            return [
-                UserInfo(
-                    id = 99999999999999999,
-                    name=user.name,
-                    email=user.email,
-                    username=user.username,
-                    phone_number=user.phone_number,
-                    user_photo=user.user_photo
-                )
-                for user in db.query(Users).all()
-            ]
+        return [
+            UserInfoForUsers(
+                name=user.name,
+                email=user.email,
+                username=user.username,
+                phone_number=user.phone_number,
+                user_photo=user.user_photo
+            )
+            for user in db.query(Users).all()
+        ]
 
     raise HTTPException(status_code=403, detail="You do not have permissions")
 

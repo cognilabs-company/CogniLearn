@@ -1,6 +1,6 @@
 
 from datetime import datetime
-
+from typing import List
 from pydantic import BaseModel, Field
 import enum
 from database import db_dependency
@@ -79,17 +79,43 @@ class EditLessonRequestModel(BaseModel):
     duration: int = Field(gt=0)
 
 
+
+
+
+class AnswerRequestModel(BaseModel):
+    answer_text: str
+      
+
+    
+class Submission(BaseModel):
+    answers: List[AnswerRequestModel]
+
+    
 class QuestionRequestModel(BaseModel):
     question_text: str
     quiz_id: int    
+    answers: List[AnswerRequestModel]
+    correct_answer_id: int
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "question_text": "What is the capital of France?",
+                "quiz_id": 1,
+                "answers": [
+                    {"answer_text": "Paris"},
+                    {"answer_text": "Berlin"},
+                    {"answer_text": "Rome"},
+                    {"answer_text": "Uzbekistan"},
+                ],
+                "correct_answer_id": 1
+            }
+        }
+
 
 class EditQuestionRequestModel(BaseModel):
     question_text: str
     quiz_id: int    
-
-class AnswerRequestModel(BaseModel):
-    answer_text: str
-    question_id: int    
 
 class EditAnswerRequestModel(BaseModel):
     answer_text: str

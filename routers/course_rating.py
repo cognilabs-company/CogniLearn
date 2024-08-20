@@ -25,12 +25,13 @@ async def get_all(user: user_dependancy, db: db_dependency):
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
 
+    if is_admin(db,user):
+        return db.query(CourseRatings).all()
+
     if user_role.role_name == "student":
         existing_rating = db.query(CourseRatings).filter(CourseRatings.user_id == current_user.id).all()
         return existing_rating
     
-    if is_admin(db,user):
-        return db.query(CourseRatings).all()
     
     raise HTTPException(status_code=403, detail="You do not have permissions")
 
@@ -44,6 +45,11 @@ async def course_rating(user: user_dependancy, db: db_dependency, course_rating:
     
     current_user = db.query(Users).filter(Users.id == user.get('id')).first
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+
+    if is_admin(db,user):
+        return db.query(CourseRatings).filter(CourseRatings.rating == course_rating).all()
+        if course_rating is None:
+            raise HTTPException(status_code=404, detail="Not found")
 
     if user_role.role_name == "student":
         course_rating = db.query(CourseRatings).filter(CourseRatings.user_id == current_user.id).all()
@@ -91,7 +97,7 @@ async def edit_course_rating(user: user_dependancy, db: db_dependency, course_ra
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
 
-    if user_role.role_name == "student":
+    if user_role.role_name == "student" or user_role.role_name == "admin":
         course_model = db(CourseRatings).filter(CourseRatings.id == course_rating_id).first()
 
         if course_model is None:
@@ -115,7 +121,7 @@ async def delete_course_rating(user: user_dependancy, db: db_dependency, course_
     existing_rating = db.query(CourseRatings).filter(CourseRatings.user_id == current_user.id,
                                                     CourseRatings.course_id == course_rating_id).first()
 
-    if user_role.role_name == "student":
+    if user_role.role_name == "student" or user_role.role_name == "admin":
         course_model = db.query(CourseRatings).filter(CourseRatings.id == course_rating_id).first()
         if course_model is None:
             raise HTTPException(status_code=404, detail="Not found")

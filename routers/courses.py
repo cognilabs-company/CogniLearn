@@ -53,18 +53,21 @@ async def get_course(
         raise HTTPException(status_code=401, detail="Authentication failed")
 
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    if not current_user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+
+    
 
     if is_admin(db, user):
        
-        courses = db.query(Courses).filter(
-            func.lower(Courses.course_name) == name.lower()).all()
+        courses = db.query(Courses).filter(func.lower(Courses.course_name == name.lower())).all()
 
         if not courses:
             raise HTTPException(status_code=404, detail="Course not found")
 
         return courses
+    
+    if user_role.role_name == "student":
+        courses = db.query(Enrollments).filter(Enrollments.user_id == current_user.id, Courses.course_name == name).all() 
 
 
 @router.post("/add-course", status_code=status.HTTP_201_CREATED)

@@ -84,6 +84,7 @@ class Quizzes(Base):
     quiz_name = Column(String)
     created_at = Column(TIMESTAMP, default=datetime.utcnow())
     lesson_id = Column(Integer, ForeignKey("lessons.id"))
+    passing_score = Column(Integer)
 
     lesson = relationship("Lessons", back_populates="quiz")
     question = relationship("Questions", back_populates="quiz")
@@ -96,10 +97,12 @@ class Questions(Base):
     id = Column(Integer, primary_key=True, index=True)
     question_text = Column(String)
     created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    correct_answer_id = Column(Integer, ForeignKey("answers.id"))
     quiz_id = Column(Integer, ForeignKey("quizzes.id"))
 
     quiz = relationship("Quizzes", back_populates="question")
-    answer = relationship("Answers", back_populates="question")
+    answer = relationship("Answers", back_populates="question") 
+   
 
 
 class Answers(Base):
@@ -107,7 +110,7 @@ class Answers(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     answers_text = Column(String)
-    is_correct = Column(Boolean, default=True)
+    is_correct = Column(Boolean, default=False)
     question_id = Column(Integer, ForeignKey("questions.id"))
 
     question = relationship("Questions", back_populates="answer")
@@ -121,6 +124,7 @@ class StudentQuizAttempts(Base):
     score = Column(Integer)
     student_id = Column(Integer, ForeignKey("users.id"))
     quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+    passed = Column(Boolean)
 
     student_quiz_attempt_quiz = relationship("Quizzes", back_populates="student_attempt")
     student_quiz_attempt_user = relationship("Users", back_populates="student_user")
@@ -153,5 +157,17 @@ class LessonRatings(Base):
     lesson_rating_user = relationship("Users", back_populates="lesson_rating")
     lesson_rating_lesson = relationship("Lessons", back_populates="lesson_rating")
 
+
+
+class Results(Base):
+    __tablename__ = "results"
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("users.id"))
+    question_id = Column(Integer, ForeignKey("questions.id"))
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+    correct = Column(Integer)
+    student = relationship("Users")
+    question = relationship("Questions")
+    quiz = relationship("Quizzes")
 
 
