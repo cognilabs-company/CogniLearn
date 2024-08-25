@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import relationship
 from database import Base
-from sqlalchemy import Column, String, Integer, TIMESTAMP, Boolean, ForeignKey, func, Enum
+from sqlalchemy import Column, String, Integer, TIMESTAMP, Boolean, ForeignKey, func, Enum, Float
 
 
 class Users(Base):
@@ -35,7 +35,7 @@ class Roles(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     role_name = Column(String(20))
-    # role_owner_id = Column(Integer, ForeignKey("users.id"))
+
     role_owner = relationship("Users", back_populates="role")
     user_role_callingprocess = relationship("CallingProcess", back_populates="user_role")
 
@@ -48,7 +48,7 @@ class Courses(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow())
     duration = Column(Integer)
     is_active = Column(Boolean, default=True)
-    course_price = Column(float)
+    course_price = Column(Float)
 
     enrollment = relationship("Enrollments", back_populates="course")
     lesson = relationship("Lessons", back_populates="course")
@@ -170,11 +170,11 @@ class StudentMonthlyPayment(Base):
     __tablename__ = "coursepayment"
 
     id = Column(Integer, primary_key=True, index=True)
-    student_id = Column(Integer, ForeignKey("enrollments.user_id"))
-    course_id = Column(Integer, ForeignKey("enrollments.course_id"))
+    student_id = Column(Integer, ForeignKey("users.id"))
+    course_id = Column(Integer, ForeignKey("courses.id"))
     payment_status = Column(Boolean, default=False)
-    price = Column(float, ForeignKey("courses.course_price"))
-    payed_amount = Column(float)
+    price = Column(Float)
+    payed_amount = Column(Float)
     payment_date = Column(TIMESTAMP, default=datetime.now())
 
     id_of_student = relationship("Users", back_populates="student_payment")
@@ -183,8 +183,10 @@ class StudentMonthlyPayment(Base):
 
 class CallingProcess(Base):
     __tablename__ = "callingproccess"
+
+    id = Column(Integer, primary_key=True, index=True)
     user_role = Column(String, ForeignKey("roles.role_name"))
-    student_id = Column(Integer, ForeignKey("user.id"))
+    student_id = Column(Integer, ForeignKey("users.id"))
     stuff_id = Column(Integer, ForeignKey("users.id"))
     calling_time = Column(TIMESTAMP, default=datetime.now())
     description = Column(String)
@@ -199,10 +201,10 @@ class Attendance(Base):
     __tablename__ = "attendance"
 
     id = Column(Integer, primary_key=True, index=True)
-    student_id = Column(Integer, ForeignKey("user.id"))
+    student_id = Column(Integer, ForeignKey("users.id"))
     teacher_id = Column(Integer, ForeignKey("users.id"))
     lesson_id = Column(Integer, ForeignKey("lessons.id"))
-    course_id = Column(Integer, ForeignKey("lessons.course_id"))
+    course_id = Column(Integer, ForeignKey("courses.id"))
     attendance_time = Column(TIMESTAMP, default=datetime.now())
 
     id_of_student = relationship("Users", back_populates="student_attendance")
