@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="cognilabs@localhost" uuid="ade8e219-9b14-4720-8fbc-8dffafa35126">
+    <data-source source="LOCAL" name="cognilmsdatabase@localhost" uuid="fb5772d9-0586-4364-b1ef-ccc6566122e3">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/cognilabs</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5432/cognilmsdatabase</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="cognilabs@localhost">
-  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.52">
+  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
       <Grants>1||-9223372036854775808|c|G
@@ -4241,91 +4241,91 @@ true posixrules
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
     <sequence id="265" parent="264" name="answers_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16552</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="266" parent="264" name="course_ratings_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16446</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="267" parent="264" name="courses_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16394</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="268" parent="264" name="enrollments_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16466</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="269" parent="264" name="lesson_ratings_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16484</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="270" parent="264" name="lessons_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16412</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="271" parent="264" name="questions_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16519</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="272" parent="264" name="quizzes_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16504</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="273" parent="264" name="roles_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16404</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="274" parent="264" name="student_quiz_attempts_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16534</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <sequence id="275" parent="264" name="users_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16427</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <table id="276" parent="264" name="alembic_version">
@@ -4401,10 +4401,10 @@ true posixrules
       <OwnerName>postgres</OwnerName>
     </table>
     <column id="288" parent="276" name="version_num">
-      <DasType>varchar(32)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>744</StateNumber>
+      <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <index id="289" parent="276" name="alembic_version_pkc">
@@ -4425,30 +4425,30 @@ true posixrules
       <UnderlyingIndexId>16392</UnderlyingIndexId>
     </key>
     <column id="291" parent="277" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;answers_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16552</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="292" parent="277" name="answers_text">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="293" parent="277" name="is_correct">
-      <DasType>boolean|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
     <column id="294" parent="277" name="question_id">
-      <DasType>integer|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="295" parent="277" name="answers_question_id_fkey">
@@ -4482,42 +4482,42 @@ true posixrules
       <UnderlyingIndexId>16559</UnderlyingIndexId>
     </key>
     <column id="299" parent="278" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;course_ratings_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16446</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="300" parent="278" name="comment">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="301" parent="278" name="rating">
-      <DasType>integer|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="302" parent="278" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="303" parent="278" name="user_id">
-      <DasType>integer|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="304" parent="278" name="course_id">
-      <DasType>integer|0s</DasType>
       <Position>6</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="305" parent="278" name="course_ratings_user_id_fkey">
@@ -4559,36 +4559,36 @@ true posixrules
       <UnderlyingIndexId>16453</UnderlyingIndexId>
     </key>
     <column id="310" parent="279" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;courses_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16394</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="311" parent="279" name="course_name">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="312" parent="279" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="313" parent="279" name="duration">
-      <DasType>integer|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="314" parent="279" name="is_active">
-      <DasType>boolean|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
     <index id="315" parent="279" name="courses_pkey">
@@ -4614,36 +4614,36 @@ true posixrules
       <UnderlyingIndexId>16401</UnderlyingIndexId>
     </key>
     <column id="318" parent="280" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;enrollments_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16466</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="319" parent="280" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="320" parent="280" name="finished_at">
-      <DasType>timestamp|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="321" parent="280" name="user_id">
-      <DasType>integer|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="322" parent="280" name="course_id">
-      <DasType>integer|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="323" parent="280" name="enrollments_user_id_fkey">
@@ -4685,42 +4685,42 @@ true posixrules
       <UnderlyingIndexId>16471</UnderlyingIndexId>
     </key>
     <column id="328" parent="281" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;lesson_ratings_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16484</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="329" parent="281" name="comment">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="330" parent="281" name="rating">
-      <DasType>integer|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="331" parent="281" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="332" parent="281" name="user_id">
-      <DasType>integer|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="333" parent="281" name="lesson_id">
-      <DasType>integer|0s</DasType>
       <Position>6</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="334" parent="281" name="lesson_ratings_user_id_fkey">
@@ -4762,48 +4762,48 @@ true posixrules
       <UnderlyingIndexId>16491</UnderlyingIndexId>
     </key>
     <column id="339" parent="282" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;lessons_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16412</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="340" parent="282" name="lesson_name">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="341" parent="282" name="video_url">
-      <DasType>varchar|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="342" parent="282" name="description">
-      <DasType>varchar|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="343" parent="282" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="344" parent="282" name="duration">
-      <DasType>integer|0s</DasType>
       <Position>6</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="345" parent="282" name="course_id">
-      <DasType>integer|0s</DasType>
       <Position>7</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="346" parent="282" name="lessons_course_id_fkey">
@@ -4837,30 +4837,30 @@ true posixrules
       <UnderlyingIndexId>16419</UnderlyingIndexId>
     </key>
     <column id="350" parent="283" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;questions_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16519</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="351" parent="283" name="question_text">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="352" parent="283" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="353" parent="283" name="quiz_id">
-      <DasType>integer|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="354" parent="283" name="questions_quiz_id_fkey">
@@ -4894,30 +4894,30 @@ true posixrules
       <UnderlyingIndexId>16526</UnderlyingIndexId>
     </key>
     <column id="358" parent="284" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;quizzes_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16504</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="359" parent="284" name="quiz_name">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="360" parent="284" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="361" parent="284" name="lesson_id">
-      <DasType>integer|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="362" parent="284" name="quizzes_lesson_id_fkey">
@@ -4951,18 +4951,18 @@ true posixrules
       <UnderlyingIndexId>16511</UnderlyingIndexId>
     </key>
     <column id="366" parent="285" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;roles_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16404</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="367" parent="285" name="role_name">
-      <DasType>varchar(20)|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <index id="368" parent="285" name="roles_pkey">
@@ -4988,36 +4988,36 @@ true posixrules
       <UnderlyingIndexId>16409</UnderlyingIndexId>
     </key>
     <column id="371" parent="286" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;student_quiz_attempts_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16534</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="372" parent="286" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="373" parent="286" name="score">
-      <DasType>integer|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="374" parent="286" name="student_id">
-      <DasType>integer|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="375" parent="286" name="quiz_id">
-      <DasType>integer|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="376" parent="286" name="student_quiz_attempts_student_id_fkey">
@@ -5059,66 +5059,66 @@ true posixrules
       <UnderlyingIndexId>16539</UnderlyingIndexId>
     </key>
     <column id="381" parent="287" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;users_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16427</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="382" parent="287" name="email">
-      <DasType>varchar|0s</DasType>
       <Position>2</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="383" parent="287" name="username">
-      <DasType>varchar|0s</DasType>
       <Position>3</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="384" parent="287" name="hashed_password">
-      <DasType>varchar(150)|0s</DasType>
       <Position>4</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="385" parent="287" name="phone_number">
-      <DasType>varchar(30)|0s</DasType>
       <Position>5</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar(30)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="386" parent="287" name="name">
-      <DasType>varchar(100)|0s</DasType>
       <Position>6</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="387" parent="287" name="created_at">
-      <DasType>timestamp|0s</DasType>
       <Position>7</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="388" parent="287" name="is_active">
-      <DasType>boolean|0s</DasType>
       <Position>8</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
     <column id="389" parent="287" name="user_photo">
-      <DasType>varchar|0s</DasType>
       <Position>9</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="390" parent="287" name="role_id">
-      <DasType>integer|0s</DasType>
       <Position>10</Position>
       <StateNumber>745</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="391" parent="287" name="users_role_id_fkey">
