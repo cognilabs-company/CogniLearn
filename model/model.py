@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import relationship
 from database import Base
-from sqlalchemy import Column, String, Integer, TIMESTAMP, Boolean, ForeignKey
+from sqlalchemy import Column, String, Integer, TIMESTAMP, Boolean, ForeignKey,  func, Enum
 
 
 class Users(Base):
@@ -13,7 +13,7 @@ class Users(Base):
     hashed_password = Column(String(150))
     phone_number = Column(String(30))
     name = Column(String(100))
-    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    created_at = Column(TIMESTAMP, default=datetime.now())
     is_active = Column(Boolean, default=True)
     user_photo = Column(String, default="no photo yet !")
     role_id = Column(Integer, ForeignKey("roles.id"))
@@ -23,6 +23,15 @@ class Users(Base):
     student_user = relationship("StudentQuizAttempts", back_populates="student_quiz_attempt_user")
     course_rating = relationship("CourseRatings", back_populates="course_rating_user")
     lesson_rating = relationship("LessonRatings", back_populates="lesson_rating_user")
+    student_payment = relationship("StudentMonthlyPayment", back_populates="id_of_student")
+    student_callingprocess = relationship("CallingProcess", back_populates="id_of_student")
+    stuff_callingprocess = relationship("CallingProcess", back_populates="id_of_stuff") 
+    student_attendance = relationship("Attendance", back_populates="id_of_student")
+    student_attendance = relationship("Attendance", back_populates="id_of_teacher")
+
+
+
+
 
 
 class Roles(Base):
@@ -32,6 +41,7 @@ class Roles(Base):
     role_name = Column(String(20))
     # role_owner_id = Column(Integer, ForeignKey("users.id"))
     role_owner = relationship("Users", back_populates="role")
+    user_role_callingprocess = relationship("CallingProcess", back_populates="user_role")
 
 
 class Courses(Base):
@@ -42,10 +52,13 @@ class Courses(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow())
     duration = Column(Integer)
     is_active = Column(Boolean, default=True)
+    course_price = Column(float)
 
     enrollment = relationship("Enrollments", back_populates="course")
     lesson = relationship("Lessons", back_populates="course")
     course_rating = relationship("CourseRatings", back_populates="course_rating_course")
+    student_payment = relationship("StudentMonthlyPayment", back_populates="id_of_course")
+    student_attendance = relationship("Attendance", back_populates="id_of_course")
 
 
 class Enrollments(Base):
@@ -59,6 +72,10 @@ class Enrollments(Base):
 
     owner = relationship("Users", back_populates="enrollment")
     course = relationship("Courses", back_populates="enrollment")
+
+
+
+
 
 
 class Lessons(Base):
@@ -75,7 +92,11 @@ class Lessons(Base):
     course = relationship("Courses", back_populates="lesson")
     quiz = relationship("Quizzes", back_populates="lesson")
     lesson_rating = relationship("LessonRatings", back_populates="lesson_rating_lesson")
+    student_attendance = relationship("Attendance", back_populates="id_of_lesson")
+      
 
+
+    
 
 class LessonRatings(Base):
     __tablename__ = "lesson_ratings"
@@ -155,5 +176,54 @@ class CourseRatings(Base):
 
 
 
+#CRM part
 
 
+class StudentMonthlyPayment(Base):
+    __tablename__ = "coursepayment"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("enrollments.user_id"))
+    course_id = Column(Integer, ForeignKey("enrollments.course_id"))
+    payment_status = Column(Boolean, default=False)
+    price = Column(float, ForeignKey("courses.course_price"))
+    payed_amount = Column(float)
+    payment_date = Column(TIMESTAMP, default=datetime.now())
+
+    id_of_student = relationship("Users", back_populates="student_payment")
+    id_of_course = relationship("Course", back_populates="student_payment")
+
+
+
+
+class CallingProcess(Base):
+
+    __tablename__ = "callingproccess"
+    user_role = Column(String, ForeignKey("roles.role_name"))    
+    student_id = Column(Integer, ForeignKey("user.id"))
+    stuff_id = Column(Integer, ForeignKey("users.id"))
+    calling_time = Column(TIMESTAMP, default=datetime.now())
+    description = Column(String)
+    status = Column(Enum('Successfull', 'Failed', 'Incoming', name = 'status_enum'), default='Incoming') 
+
+    id_of_student = relationship("Users", back_populates="student_callingprocess")
+    id_of_stuff = relationship("Users", back_populates="stuff_callingprocess")
+    user_role = relationship("Roles", back_populates="user_role_callingprocess")
+
+
+
+
+class Attendance(Base):    
+    __tablename__ = "attendance"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("user.id"))
+    teacher_id = Column(Integer, ForeignKey("users.id"))
+    lesson_id = Column(Integer, ForeignKey("lessons.id"))
+    course_id = Column(Integer, ForeignKey("lessons.course_id"))
+    attendance_time = Column(TIMESTAMP, default=datetime.now())
+
+    id_of_student = relationship("Users", back_populates="student_attendance")
+    id_of_teacher = relationship("Users", back_populates="student_attendance")
+    id_of_course = relationship("Courses", back_populates="student_attendance")
+    id_of_lesson = relationship("Lessons", back_populates="student_attendance")
