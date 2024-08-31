@@ -1,9 +1,5 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Path
 from typing import Annotated
-
-
-from sqlalchemy import func
-
 from auth.auth import get_current_user
 from database import db_dependency
 from model.model import Users, Roles, StudentQuizAttempts

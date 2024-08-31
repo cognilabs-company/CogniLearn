@@ -36,6 +36,7 @@ class RoleRequestModel(BaseModel):
 
 class CourseRequestModel(BaseModel):
     course_name: str
+    price: int
     duration: int = Field(gt=0)
 
 
@@ -114,3 +115,18 @@ class EnrollemntsRequestModel(BaseModel):
     lesson_id: int      
     
         
+class CallingProcessUserInfo(BaseModel):
+    student_name: str
+    phone_number: str
+
+class AfterCall(BaseModel):
+    status: str
+    desciption: str
+        
+class Payment(BaseModel):
+    fullname: str
+    payment_course_name: str
+    payment_course_id: int
+    phone_number: str
+    payed_amount: int
+       

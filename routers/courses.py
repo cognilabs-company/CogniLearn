@@ -76,7 +76,7 @@ async def add_course(db: db_dependency, user: user_dependency,
     curret_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role_name = db.query(Roles).filter(Roles.id == curret_user.role_id)
 
-    if is_admin(db, user) or user_role_name.role_name == "teacher":
+    if is_admin(db, user):
         request_model = Courses(**request_model.model_dump())
         db.add(request_model)
         db.commit()

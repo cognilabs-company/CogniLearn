@@ -6,7 +6,7 @@ from sqlalchemy import func
 
 from auth.auth import get_current_user
 from database import db_dependency
-from model import Users, Roles, Answers
+from model.model import Users, Roles, Answers
 from routers.scheme import AnswerRequestModel, EditAnswerRequestModel
 
 router = APIRouter(

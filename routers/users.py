@@ -74,37 +74,10 @@ async def edit_profile(db: db_dependency,
 
 
  
-@router.get("/get-all-users", response_model=List[UserInfo],status_code=status.HTTP_200_OK)
-async def get_all(db: db_dependency, user: user_dependency):
-    if user is None:
-        raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if not is_admin(db, user):
 
-        raise HTTPException(status_code=403, detail="Forbidden")
-
-    users = db.query(Users, Roles).join(Roles, Users.role_id == Roles.id).all()
-
-    response = [
-        {
-            "id": user.id,
-            "email": user.email,
-            "username": user.username,
-            "name": user.name,
-            "phone_number": user.phone_number,
-            "created_at": user.created_at,
-            "is_active": user.is_active,
-            "user_photo": user.user_photo,
-            "role_id": user.role_id,
-            "role_name": role.role_name
-        }
-        for user, role in users
-    ]
-
-    return response
-
-@router.get("/get-user", response_model=UserInfo)
-async def get_all(db: db_dependency,
+@router.get("/user-info", response_model=UserInfo)
+async def user_info(db: db_dependency,
                   user: user_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
