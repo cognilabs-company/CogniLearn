@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Path
 from typing import Annotated
-
-from pydantic import BaseModel, Field
 from sqlalchemy import func
 from utils import is_admin
 from auth.auth import get_current_user
 from database import db_dependency
-from model.model import Users, Roles, Lessons, LessonRatings
+from model.model import Lessons, LessonRatings
 from routers.scheme import LessonRequestModel, EditLessonRequestModel
 
 router = APIRouter(
@@ -17,10 +15,7 @@ router = APIRouter(
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-
-
-
-
+# There is a problem below
 @router.get("/get-all", status_code=status.HTTP_200_OK)
 async def get_all_lessons(user: user_dependency, db: db_dependency):
     if user is None:
@@ -48,9 +43,6 @@ async def get_all_lessons(user: user_dependency, db: db_dependency):
     return result
 
 
-    
-
-
 @router.get("/get-lesson/{name}", status_code=status.HTTP_200_OK)
 async def get_lesson(user: user_dependency, db: db_dependency,
                      name: str = Path(max_length=100)):
@@ -58,19 +50,14 @@ async def get_lesson(user: user_dependency, db: db_dependency,
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if is_admin(db, user):
+    if not is_admin(db, user):
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
-    # current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    # user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    lessons = db.query(Lessons).filter(func.lower(Lessons.lesson_name) == name.lower()).all()
+    if not lessons:
+        raise HTTPException(status_code=404, detail="Not found")
 
-    # if user_role.role_name == "admin" or user_role.role_name == "super_admin":
-        lessons = db.query(Lessons).filter(func.lower(Lessons.lesson_name) == name.lower()).all()
-        
-        if lessons is None:
-            raise HTTPException(status_code=404, detail="Not found")
-        
-        return lessons
-    raise HTTPException(status_code=403, detail="You do not have permissions")
+    return db.query(Lessons).filter(func.lower(Lessons.lesson_name) == name.lower()).all()
 
 
 @router.post("/add-lesson", status_code=status.HTTP_201_CREATED)
@@ -79,13 +66,13 @@ async def add_lesson(user: user_dependency, db: db_dependency,
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    
+    if not is_admin(db, user):
+        raise HTTPException(status_code=403, detail="You do not have permissions")
+
     lesson_model = Lessons(**response_model.model_dump())
     db.add(lesson_model)
     db.commit()
     return {"message": "Lessons added successfully"}
-
-    
 
 
 @router.put("/edit-lesson/{lesson_id}")
@@ -94,35 +81,34 @@ async def edit_lesson(user: user_dependency, db: db_dependency,
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if is_admin(db, user):
-        lesson_model = db.query(Lessons).filter(Lessons.id == lesson_id).first()
+    if not is_admin(db, user):
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
-        if lesson_model is None:
-            raise HTTPException(status_code=404, detail="Not Found")
+    lesson_model = db.query(Lessons).filter(Lessons.id == lesson_id).first()
 
-        lesson_model.lesson_name = request_model.lesson_name
-        lesson_model.duration = request_model.duration
-        db.add(lesson_model)
-        db.commit()
-        return {"message": "lesson changed successfully"}
+    if lesson_model is None:
+        raise HTTPException(status_code=404, detail="Not Found")
 
-    raise HTTPException(status_code=403, detail="You do not have permissions")
+    lesson_model.lesson_name = request_model.lesson_name
+    lesson_model.duration = request_model.duration
+    db.add(lesson_model)
+    db.commit()
+    return {"message": "Lesson changed successfully"}
 
 
-@router.delete("/delete_lesson/{lesson_id}")
+@router.delete("/delete-lesson/{lesson_id}")
 async def delete_lesson(user: user_dependency, db: db_dependency, lesson_id: int = Path(gt=0)):
-
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
 
-    if is_admin(db, user):
-        lesson_model = db.query(Lessons).filter(Lessons.id == lesson_id).first()
-        if lesson_model is None:
-            raise HTTPException(status_code=404, detail="Not Found")
+    if not is_admin(db, user):
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
-        
-        db.delete(lesson_model)
-        db.commit()
-        return {"message": "Lesson deleted successfully"}
+    lesson_model = db.query(Lessons).filter(Lessons.id == lesson_id).first()
+    if lesson_model is None:
+        raise HTTPException(status_code=404, detail="Not Found")
 
-    raise HTTPException(status_code=403, detail="You do not have permissions")
+    db.query(Lessons).filter(Lessons.id == lesson_id).delete()
+    db.commit()
+    return {"message": "Lesson deleted successfully"}
+

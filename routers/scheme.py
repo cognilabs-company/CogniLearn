@@ -66,13 +66,12 @@ class QuizRequestModel(BaseModel):
 
 class EditQuizRequestModel(BaseModel):
     quiz_name: str
-  
 
 
 class LessonRequestModel(BaseModel):
     lesson_name: str
     duration: int = Field(gt=0)
-    course_id: int
+    course_id: int = Field(gt=0)
 
 
 class EditLessonRequestModel(BaseModel):
@@ -82,15 +81,15 @@ class EditLessonRequestModel(BaseModel):
 
 class QuestionRequestModel(BaseModel):
     question_text: str
-    quiz_id: int    
+    quiz_id: int = Field(gt=0)
 
 class EditQuestionRequestModel(BaseModel):
     question_text: str
-    quiz_id: int    
+    quiz_id: int = Field(gt=0)
 
 class AnswerRequestModel(BaseModel):
-    answer_text: str
-    question_id: int    
+    answers_text: str = Field(min_length=1, max_length=50)
+    question_id: int = Field(gt=0)
 
 class EditAnswerRequestModel(BaseModel):
     answer_text: str
@@ -98,7 +97,7 @@ class EditAnswerRequestModel(BaseModel):
 
 class CourseRatingRequestModel(BaseModel):
     rating: int = Field(lt=6, gt=0)
-    course_id: int  
+    course_id: int = Field(gt=0)
 
 
 class EditCourseRatingRequestModel(BaseModel):
@@ -110,7 +109,7 @@ class LessonRatingRequestModel(BaseModel):
     rating: int = Field(lt=6, gt=0) 
     lesson_id: int      
 
-class EnrollemntsRequestModel(BaseModel):
+class EnrollmentsRequestModel(BaseModel):
     owner_name: str 
     lesson_id: int      
     

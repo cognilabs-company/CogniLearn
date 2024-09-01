@@ -17,7 +17,7 @@ router = APIRouter(
 user_dependancy = Annotated[dict, Depends(get_current_user)]
 
 
-@router.get("/get_all", status_code=status.HTTP_200_OK)
+@router.get("/get-all", status_code=status.HTTP_200_OK)
 async def get_all(user: user_dependancy, db: db_dependency):
     if user is None: 
         raise HTTPException(status_code=403, detail="Authentication failed")
@@ -32,22 +32,24 @@ async def get_all(user: user_dependancy, db: db_dependency):
     raise HTTPException(status_code=403, detail="You do not have permissions")
 
 
-@router.get("/lesson_rating/{lesson_rating}", status_code=status.HTTP_200_OK)
-async def lesson_rating(user: user_dependancy, db: db_dependency, lesson_rating: int):
+@router.get("/lesson-rating/{rate}", status_code=status.HTTP_200_OK)
+async def lesson_rating(user: user_dependancy, db: db_dependency, rate: int):
     if user is None:
         raise HTTPException(status_code=403, detail="Authentication failed")
     
     current_user = db.query(Users).filter(Users.id == user.get('id')).first()
     user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
 
-    if user_role.role_name == "student":
-        lesson_rating = db.query(LessonRatings).filter(LessonRatings.user_id == current_user.id).all()
-        if lesson_rating is None:
-            raise HTTPException(status_code=404, detail="Not found")
-        
-        return lesson_rating
+    if user_role.role_name != "student":
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
-    raise HTTPException(status_code=403, detail="You do not have permissions") 
+    model = db.query(LessonRatings).filter(LessonRatings.user_id == current_user.id,
+                                          LessonRatings.rating == rate).all()
+    if not model:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    return model
+
 
 
 
@@ -82,6 +84,7 @@ async def creat_lesson_rating(user: user_dependancy,
     raise HTTPException(status_code=403, detail="You do not have permissions")
 
 
+# There is problem below
 @router.put("/edit_lesson_rating/{lesson_rating_id}")
 async def edit_lesson_rating(user: user_dependancy, db: db_dependency, lesson_rating_id: int,
                             rating: int = Path(lt=6, gt=0)):

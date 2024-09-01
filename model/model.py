@@ -24,8 +24,8 @@ class Users(Base):
     course_rating = relationship("CourseRatings", back_populates="course_rating_user")
     lesson_rating = relationship("LessonRatings", back_populates="lesson_rating_user")
     stuff_callingprocess = relationship("CallingProcess", back_populates="id_of_stuff")
-    student_attendance = relationship("Attendance", back_populates="id_of_student")
-    student_group = relationship("Group", back_populates="id_of_student")
+    attendance_time = relationship("Attendance", back_populates="student_id_of_attendance")
+    student_group = relationship("StudentGroup", back_populates="id_of_student")
 
 
 
@@ -212,17 +212,14 @@ class Group(Base):
     __tablename__ = "group"
 
     id = Column(Integer, primary_key=True, index=True)
-    student_id = Column(Integer, ForeignKey("users.id"))
     course_id = Column(Integer, ForeignKey("courses.id"))
     teacher_id = Column(Integer, ForeignKey("teachers.id"))
     group_name = Column(String) 
 
-
-    id_of_student = relationship("Users", back_populates="student_group")
     id_of_course = relationship("Courses", back_populates="student_group")
     id_of_teacher = relationship("Teacher", back_populates="teacher_group")
     student_attendance = relationship("Attendance", back_populates="id_of_group")
-
+    id_of_student = relationship("StudentGroup", back_populates="id_of_group")
 
 
 class Teacher(Base):
@@ -239,8 +236,6 @@ class AttendanceStatus(enum.Enum):
     late = "late"
 
 
-
-
 class Attendance(Base):
     __tablename__ = "attendance"
 
@@ -251,7 +246,18 @@ class Attendance(Base):
     attendance_time = Column(Date)
     status = Column(Enum(AttendanceStatus))
 
-
-    id_of_student = relationship("Users", back_populates="student_attendance")
+    student_id_of_attendance = relationship("Users", back_populates="attendance_time")
     id_of_lesson = relationship("Lessons", back_populates="student_attendance")
     id_of_group = relationship("Group", back_populates="student_attendance")
+
+
+class StudentGroup(Base):
+    __tablename__ = "student_group"
+
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow())
+    student_id = Column(Integer, ForeignKey("users.id"))
+    group_id = Column(Integer, ForeignKey("group.id"))
+
+    id_of_student = relationship("Users", back_populates="student_group")
+    id_of_group = relationship("Group", back_populates="id_of_student")
