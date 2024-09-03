@@ -9,9 +9,9 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True)
-    username = Column(String, unique=True)
+    username = Column(String, unique=True, default=None)
     hashed_password = Column(String(150))
-    phone_number = Column(String(30))
+    phone_number = Column(String(30), default="None")
     name = Column(String(100))
     created_at = Column(TIMESTAMP, default=datetime.now())
     is_active = Column(Boolean, default=True)

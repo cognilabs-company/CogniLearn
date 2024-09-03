@@ -17,8 +17,8 @@ MAIL_SERVER ='smtp.gmail.com'
 MAIL_PASSWORD ='ukokmhdrbiiyerxj'
 RESET_PASSWORD_REDIRECT_URL: str = 'reset-password'
 RESET_PASSWORD_EXPIRY_MINUTES: int = 60 * 12
-REDIS_HOST ='localhost'
-REDIS_PORT=6379
+REDIS_HOST = 'redis'
+REDIS_PORT= 6379
 SMTP_USER = 'bek0010311@gmail.com'
 SMTP_PASSWORD ='ukokmhdrbiiyerxj'
 
