@@ -41,6 +41,36 @@ def is_admin(db: db_dependency, user):
     return False
 
 
+def is_teacher(db: db_dependency, user):
+    user_id = user.get('id')
+    current_user = db.query(Users).filter(Users.id == user_id).first()
+    if not current_user:
+        return False
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if not user_role:
+        return False
+    role_name = user_role.role_name
+    if role_name == 'teacher':
+        return True
+
+    return False
+
+
+def is_student(db: db_dependency, user):
+    user_id = user.get('id')
+    current_user = db.query(Users).filter(Users.id == user_id).first()
+    if not current_user:
+        return False
+    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if not user_role:
+        return False
+    role_name = user_role.role_name
+    if role_name == 'student':
+        return True
+
+    return False
+
+
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
 

@@ -3,45 +3,40 @@ from typing import Annotated
 from auth.auth import get_current_user
 from database import db_dependency
 from model.model import Users, Roles, StudentQuizAttempts
-from routers.scheme import AnswerRequestModel, EditAnswerRequestModel
-
-
+from utils import is_admin
 
 router = APIRouter(
-    prefix='/stdent_quiz_attempt',
-    tags=['student_quiz_attempt'] 
+    prefix='/student-quiz-attempt',
+    tags=['student-quiz-attempt']
 )
 
 user_dependancy = Annotated[dict, Depends(get_current_user)]
 
 
-@router.get("/get_student_quiz_attempt", status_code=status.HTTP_200_OK)
+@router.get("/get-student-quiz-attempt", status_code=status.HTTP_200_OK)
 async def get_student_quiz_attempt(user: user_dependancy, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
     
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if not is_admin(db ,user):
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
-    if user_role.role_name == "admin" or user_role.role_name == "super admin":
-        return db.query(StudentQuizAttempts).all()
-    
-    raise HTTPException(status_code=403, detail="You do not have permissions")
+    return db.query(StudentQuizAttempts).all()
 
-@router.get("/get_student_quiz_attempt/{id}", status_code=status.HTTP_200_OK)
-async def get_student_quiz_attempt(user: user_dependancy, db: db_dependency, id: int):
+
+@router.get("/get-student-quiz-attempt/{request_id}", status_code=status.HTTP_200_OK)
+async def get_student_quiz_attempt(user: user_dependancy, db: db_dependency,
+                                   request_id: int = Path(gt=0)):
     if user is None:
         raise HTTPException(status_code=403, detail="Authentication failed")
     
-    current_user = db.query(Users).filter(Users.id == user.get('id')).first()
-    user_role = db.query(Roles).filter(Roles.id == current_user.role_id).first()
+    if not is_admin(db ,user):
+        raise HTTPException(status_code=403, detail="You do not have permissions")
 
-    if user_role.role_name == "admin" or user_role.role_name == "super admin":
-        student_quiz_attempt = db.query(StudentQuizAttempts).filter(StudentQuizAttempts.id == id).all()
-        if student_quiz_attempt is None:
-            raise HTTPException(status_code=404, detail="Not found")
-        
-        return student_quiz_attempt
-        
-    
-    raise HTTPException(status_code=403, detail="You do not have permissions")
+    student_quiz_attempt = db.query(StudentQuizAttempts).filter(StudentQuizAttempts.id == request_id).all()
+    if student_quiz_attempt is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    return db.query(StudentQuizAttempts).filter(StudentQuizAttempts.id == request_id).all()
+
+

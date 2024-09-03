@@ -1,16 +1,8 @@
-from datetime import datetime
-
-from fastapi import APIRouter, Depends, status, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
-
-from sqlalchemy import func
-
-from utils import get_current_user, is_admin
+from utils import get_current_user
 from database import db_dependency
-from model.model import Courses, Users, Roles, Enrollments, Teacher
-from routers.scheme import CourseRequestModel,EditCourseRequestModel
-from routers.scheme import CourseRequestModel, EditCourseRequestModel
-
+from model.model import Users, Roles, Teacher
 
 
 router = APIRouter(
@@ -22,15 +14,12 @@ router = APIRouter(
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-
-
-
 @router.post("/add-teacher")
 async def add_teacher(user: user_dependency, db: db_dependency):
     # Retrieve the role ID for 'teacher'
     role = db.query(Roles).filter(Roles.role_name == "teacher").first()
     if not role:
-        return {"error": "Role 'teacher' not found."}
+        return {"Error": "Role 'teacher' not found."}
     
     teacher_role_id = role.id
     

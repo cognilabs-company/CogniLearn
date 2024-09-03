@@ -43,16 +43,6 @@ async def get_all(db: db_dependency,
     return response
 
 
-# @router.put('/edit-users-infos')
-# async def edit_users_info(db: db_dependency,
-#                   user: user_dependency,
-#                   user_id: int,
-#                   user_email: str,
-#                   user_phone: str,
-#                   is_active: bool):
-
-
-
 @router.delete('/delete-user',)
 async def delete_user(db: db_dependency,
                   user: user_dependency,
