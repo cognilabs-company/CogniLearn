@@ -3,3 +3,4 @@ migrations/versions
 user_photos
 venv
 __pycache__
+.idea
